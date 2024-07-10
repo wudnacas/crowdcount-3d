@@ -3,8 +3,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Set up scene, camera, and renderer
+const sceneShiftX = -5;
+const sceneShiftY = 10;
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+// Update camera position
+camera.position.set(sceneShiftX*2, 20, sceneShiftY*2);
+camera.lookAt(sceneShiftX, 0, sceneShiftX);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
@@ -15,17 +21,17 @@ document.body.appendChild(renderer.domElement);
 const tableScale = 3
 const tables = [
     {
-        position: new THREE.Vector3(0, 0, 0),
+        position: new THREE.Vector3(0 + sceneShiftX, 0, 0 + sceneShiftY),
         rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(tableScale,tableScale,tableScale)
     },
     {
-        position: new THREE.Vector3(1, 0, 1),
+        position: new THREE.Vector3(1 + sceneShiftX, 0, 1 + sceneShiftY),
         rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(tableScale,tableScale,tableScale)
     },
     {
-        position: new THREE.Vector3(0, 0, 2),
+        position: new THREE.Vector3(0 + sceneShiftX, 0, 2 + sceneShiftY),
         rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(tableScale,tableScale,tableScale)
     }
@@ -34,17 +40,17 @@ const tables = [
 const monitorScale = 0.8
 const monitors = [
     {
-        position: new THREE.Vector3(0, 2.1, 0),
+        position: new THREE.Vector3(0 + sceneShiftX, 2.1, 0 + sceneShiftY),
         rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(monitorScale,monitorScale,monitorScale)
     },
     {
-        position: new THREE.Vector3(1, 2.1, 1),
+        position: new THREE.Vector3(1 + sceneShiftX, 2.1, 1 + sceneShiftY),
         rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(monitorScale,monitorScale,monitorScale)
     },
     {
-        position: new THREE.Vector3(0, 2.1, 2),
+        position: new THREE.Vector3(0 + sceneShiftX, 2.1, 2 + sceneShiftY),
         rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(monitorScale,monitorScale,monitorScale)
     }
@@ -52,16 +58,15 @@ const monitors = [
 
 const tvScale = 1
 const tvH =  {
-        position: new THREE.Vector3(6, 0, -12),
+        position: new THREE.Vector3(6 + sceneShiftX, 0, -12 + sceneShiftY),
         rotation: new THREE.Vector3(0, 90, 0),
         scale: new THREE.Vector3(tvScale,tvScale,tvScale)
     }
 const tvV =    {
-        position: new THREE.Vector3(8, 0, -8),
+        position: new THREE.Vector3(8 + sceneShiftX, 0, -8 + sceneShiftY),
         rotation: new THREE.Vector3(0, 90, 0 ),
         scale: new THREE.Vector3(tvScale,tvScale,tvScale)
     }
-
 
 
 
@@ -82,6 +87,7 @@ const floorMaterial = new THREE.MeshStandardMaterial({
 const floor = new THREE.Mesh(floorGeometry, floorMaterial);
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
+floor.position.set(sceneShiftX, 0, sceneShiftY);
 scene.add(floor);
 
 // Add lighting
@@ -95,19 +101,20 @@ directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 directionalLight.shadow.camera.near = 1;
 directionalLight.shadow.camera.far = 20;
-scene.add(directionalLight);
+// scene.add(directionalLight);
 
 // Set up camera position for top view
-camera.position.set(0, 20, 0);
-camera.lookAt(0, 0, 0);
+// camera.position.set(0, 20, 0);
+// camera.lookAt(0, 0, 0);
 
-// Rotate the view 90 degrees around the Z-axis
-camera.up.set(1, 0, 0);
+// // Rotate the view 90 degrees around the Z-axis
+// camera.up.set(1, 0, 0);
 
 // Add orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+controls.target.set(sceneShiftX, 0, sceneShiftY);
 
 // Function to create gradient texture
 function createGradientTexture(topColor, bottomColor) {
@@ -206,11 +213,11 @@ loader.load('tv-h.glb', (gltf) => {
 
     tvModel.traverse((child) => {
         if (child.isMesh) {
-            child.material.color.set(0xD3D3D3); // light grey color
-            child.material.emissive = new THREE.Color(0xD3D3D3); // light grey emissive color
+            child.material.color.set(0xFFFFFF); // white color
+            child.material.emissive = new THREE.Color(0xFFFFFF); // white emissive color
             child.material.emissiveIntensity = 0.3; // set emissive intensity to make it glow
-            child.material.transparent = true; // make the material transparent
-            child.material.opacity = 0.8; // set the opacity to 50%
+            child.material.transparent = false; // make the material not transparent
+            child.material.opacity = 1; // set the opacity to 100%
             }
         });
     scene.add(tvModel);
@@ -227,11 +234,11 @@ loader.load('tv-v.glb', (gltf) => {
 
     tvModel.traverse((child) => {
         if (child.isMesh) {
-            child.material.color.set(0xD3D3D3); // light grey color
-            child.material.emissive = new THREE.Color(0xD3D3D3); // light grey emissive color
+            child.material.color.set(0xFFFFFF); // white color
+            child.material.emissive = new THREE.Color(0xFFFFFF); // white emissive color
             child.material.emissiveIntensity = 0.3; // set emissive intensity to make it glow
-            child.material.transparent = true; // make the material transparent
-            child.material.opacity = 0.8; // set the opacity to 50%
+            child.material.transparent = false; // make the material not transparent
+            child.material.opacity = 1; // set the opacity to 100%
             }
         });
     scene.add(tvModel);
@@ -264,8 +271,6 @@ loader.load('tv-v.glb', (gltf) => {
 const pathPoints = [
     new THREE.Vector3(-10, 0, 0),
     new THREE.Vector3(10, 0, 0),
-    new THREE.Vector3(10, 0, 10),
-    new THREE.Vector3(-10, 0, 10),
     // new THREE.Vector3(0, 0, 0)
 ];
 let currentPointIndex = 0;
@@ -344,26 +349,26 @@ loader.load('alligator_walking_upright.glb', (gltf) => {
 
 
 // Animation loop
-function animate() {
-    requestAnimationFrame(animate);
+// function animate() {
+//     requestAnimationFrame(animate);
     
-    // people.forEach(person => {
-    //     if (person.model) {
-    //         // Update person's position
-    //         person.angle += person.speed;
-    //         const x = Math.cos(person.angle) * person.radius;
-    //         const z = Math.sin(person.angle) * person.radius;
-    //         person.model.position.set(x, 2.5, z);
+//     // people.forEach(person => {
+//     //     if (person.model) {
+//     //         // Update person's position
+//     //         person.angle += person.speed;
+//     //         const x = Math.cos(person.angle) * person.radius;
+//     //         const z = Math.sin(person.angle) * person.radius;
+//     //         person.model.position.set(x, 2.5, z);
             
-    //         // Update person's rotation to face the walking direction
-    //         person.model.rotation.y = person.angle + Math.PI / 2;
-    //     }
-    // });
+//     //         // Update person's rotation to face the walking direction
+//     //         person.model.rotation.y = person.angle + Math.PI / 2;
+//     //     }
+//     // });
     
-    controls.update();
-    renderer.render(scene, camera);
-}
-animate();
+//     controls.update();
+//     renderer.render(scene, camera);
+// }
+// animate();
 
 
 
@@ -375,39 +380,226 @@ window.addEventListener('resize', () => {
 });
 
 // Create an info block
-const infoBlock = document.createElement('div');
-infoBlock.style.position = 'absolute';
-infoBlock.style.bottom = '40px';
-infoBlock.style.left = '40px';
-infoBlock.style.padding = '40px';
-infoBlock.style.backgroundColor = 'rgba(211, 211, 211, 0.7)';
-infoBlock.style.color = 'white';
-infoBlock.style.fontFamily = 'Arial, sans-serif';
-infoBlock.style.fontSize = '36px';
-infoBlock.style.borderRadius = '30px';
-infoBlock.innerHTML = 'Crowd Count 3D Scene';
-document.body.appendChild(infoBlock);
+// const infoBlock = document.createElement('div');
+// infoBlock.style.position = 'absolute';
+// infoBlock.style.bottom = '40px';
+// infoBlock.style.left = '40px';
+// infoBlock.style.padding = '40px';
+// infoBlock.style.backgroundColor = 'rgba(211, 211, 211, 0.7)';
+// infoBlock.style.color = 'white';
+// infoBlock.style.fontFamily = 'Arial, sans-serif';
+// infoBlock.style.fontSize = '36px';
+// infoBlock.style.borderRadius = '30px';
+// infoBlock.innerHTML = 'Crowd Count 3D Scene';
+// document.body.appendChild(infoBlock);
 
 
-// Create an info block
-const infoBlock2 = document.createElement('div');
-infoBlock2.style.position = 'absolute';
-infoBlock2.style.bottom = '40px';
-infoBlock2.style.left = '540px';
-infoBlock2.style.padding = '40px';
-infoBlock2.style.backgroundColor = 'rgba(211, 211, 211, 0.7)';
-infoBlock2.style.color = 'white';
-infoBlock2.style.fontFamily = 'Arial, sans-serif';
-infoBlock2.style.fontSize = '36px';
-infoBlock2.style.borderRadius = '30px';
-infoBlock2.innerHTML = 'Crowd Count 3D Scene';
-document.body.appendChild(infoBlock2);
+// // Create an info block
+// const infoBlock2 = document.createElement('div');
+// infoBlock2.style.position = 'absolute';
+// infoBlock2.style.bottom = '40px';
+// infoBlock2.style.left = '540px';
+// infoBlock2.style.padding = '40px';
+// infoBlock2.style.backgroundColor = 'rgba(211, 211, 211, 0.7)';
+// infoBlock2.style.color = 'white';
+// infoBlock2.style.fontFamily = 'Arial, sans-serif';
+// infoBlock2.style.fontSize = '36px';
+// infoBlock2.style.borderRadius = '30px';
+// infoBlock2.innerHTML = 'Crowd Count 3D Scene';
+// document.body.appendChild(infoBlock2);
 
 
 // backgrop
 const additionalBoxGeometry = new THREE.BoxGeometry(15, 7, 0.2);
 const additionalBoxMaterial = new THREE.MeshBasicMaterial({ color: 0x808080, transparent: true, opacity: 0.5 });
 const additionalBox = new THREE.Mesh(additionalBoxGeometry, additionalBoxMaterial);
-additionalBox.position.set(9, 3, 0);
+additionalBox.position.set(9 + sceneShiftX, 3, 0 + sceneShiftY);
 additionalBox.rotation.y = Math.PI / 2; // Rotate 90 degrees around the z-axis
 scene.add(additionalBox);
+
+
+function createTextSprite(message) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = 'Bold 32px Arial'; // Increased font size
+    context.fillStyle = 'rgba(0,0,0,1)'; // Changed to black text
+    context.strokeStyle = 'white'; // Added white outline
+    context.lineWidth = 4; // Width of the outline
+    
+    // Measure text width to create a properly sized canvas
+    const textMetrics = context.measureText(message);
+    const textWidth = textMetrics.width;
+    
+    canvas.width = textWidth + 20; // Add some padding
+    canvas.height = 40; // Increased height
+    
+    // Redraw with the new canvas size
+    context.font = '20px Arial';
+    context.fillStyle = 'rgba(255,255,255,1)';
+    context.strokeStyle = 'white';
+    context.lineWidth = 0;
+    
+    // Draw text with outline
+    context.strokeText(message, 10, 30);
+    context.fillText(message, 10, 30);
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(1, 1, 1); // Increased scale
+    return sprite;
+}
+
+function addAxes() {
+    const axisLength = 50;
+    const axisColor = 'white';
+    const axisWidth = 2;
+
+    // X-axis
+    const xAxisGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-axisLength/2, 0, 0),
+        new THREE.Vector3(axisLength/2, 0, 0)
+    ]);
+    const xAxisMaterial = new THREE.LineBasicMaterial({ color: axisColor, linewidth: axisWidth });
+    const xAxis = new THREE.Line(xAxisGeometry, xAxisMaterial);
+    scene.add(xAxis);
+
+    // Y-axis
+    const yAxisGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, -axisLength/2),
+        new THREE.Vector3(0, 0, axisLength/2)
+    ]);
+    const yAxisMaterial = new THREE.LineBasicMaterial({ color: axisColor, linewidth: axisWidth });
+    const yAxis = new THREE.Line(yAxisGeometry, yAxisMaterial);
+    scene.add(yAxis);
+
+    // Add ticks and labels
+    for (let i = -axisLength/2; i <= axisLength/2; i += 5) {
+        // X-axis ticks and labels
+        const xTickGeometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(i, 0, -0.2),
+            new THREE.Vector3(i, 0, 0.2)
+        ]);
+        const xTick = new THREE.Line(xTickGeometry, xAxisMaterial);
+        scene.add(xTick);
+
+        const xLabel = createTextSprite(i.toString(), { color: 'white' });
+        xLabel.position.set(i, 0.5, 0);
+        scene.add(xLabel);
+
+        // Y-axis ticks and labels
+        const yTickGeometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(-0.2, 0, i),
+            new THREE.Vector3(0.2, 0, i)
+        ]);
+        const yTick = new THREE.Line(yTickGeometry, yAxisMaterial);
+        scene.add(yTick);
+        const yLabel = createTextSprite(i.toString(), { color: 'white' });
+        yLabel.position.set(0, 0.5, i);
+        scene.add(yLabel);
+    }
+
+    // Add axis titles
+    const xTitle = createTextSprite('X-axis', { color: 'white', fontSize: 24 });
+    xTitle.position.set(axisLength/2 + 2, 1, 0);
+    scene.add(xTitle);
+
+    const yTitle = createTextSprite('Y-axis', { color: 'white', fontSize: 24 });
+    yTitle.position.set(0, 1, axisLength/2 + 2);
+    scene.add(yTitle);
+}
+
+// Call the function to add axes
+addAxes();
+
+
+
+const personModels = {};
+let redisData = {};
+
+// Function to fetch Redis data
+async function fetchRedisData() {
+    try {
+        const response = await fetch('http://localhost:3000/api/redis-data');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        redisData = await response.json();
+        if (!redisData || typeof redisData !== 'object') {
+            throw new Error('Invalid data format received from Redis');
+        }
+    } catch (error) {
+        console.error("Error fetching or parsing Redis data:", error);
+    }
+}
+setInterval(fetchRedisData, 1000);
+
+function createWalkingMan(id, x, y, z) {
+    loader.load('alligator_walking_upright.glb', (gltf) => {
+        const walkingMan = gltf.scene;
+        walkingMan.scale.copy(manSettings.scale);
+        walkingMan.position.set(x, y, z);
+        walkingMan.castShadow = manSettings.castShadow;
+        walkingMan.receiveShadow = manSettings.receiveShadow;
+        
+        scene.add(walkingMan);
+
+        const mixer = new THREE.AnimationMixer(walkingMan);
+        gltf.animations.forEach((clip) => {
+            const action = mixer.clipAction(clip);
+            action.timeScale = manSettings.animationTimeScale;
+            action.play();
+        });
+
+        const textSprite = createTextSprite(id);
+        textSprite.position.set(0, 3, 0); // Position the sprite above the model
+        walkingMan.add(textSprite);
+
+        personModels[id] = { model: walkingMan, mixer: mixer };
+    });
+}
+
+
+function animate() {
+    requestAnimationFrame(animate);
+    const clock = new THREE.Clock();
+    const delta = clock.getDelta();
+
+    if (Object.keys(redisData).length > 0) {
+        for (const [id, data] of Object.entries(redisData)) {
+            if (!personModels[id]) {
+                createWalkingMan(id, data.x, 0, data.y);
+            } else {
+                const model = personModels[id].model;
+                const targetPosition = new THREE.Vector3(data.x, 0, data.y);
+                const direction = new THREE.Vector3().subVectors(targetPosition, model.position).normalize();
+                
+                // Move the model
+                model.position.add(direction.multiplyScalar(pathSpeed));
+                
+                // Rotate the model to face the direction of movement
+                if (direction.length() > 0.001) {
+                    model.lookAt(targetPosition);
+                }
+                
+                // Update the mixer
+                personModels[id].mixer.update(delta);
+            }
+        }
+        
+        // Remove models that are no longer in the data
+        for (const id in personModels) {
+            if (!redisData[id]) {
+                scene.remove(personModels[id].model);
+                delete personModels[id];
+            }
+        }
+    }
+    
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+// Start the animation and initial data fetch
+animate();
+fetchRedisData();
