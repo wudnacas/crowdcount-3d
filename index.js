@@ -12,33 +12,56 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // objects
-const tableScale = 1.5
+const tableScale = 3
 const tables = [
     {
         position: new THREE.Vector3(0, 0, 0),
-        rotation: new THREE.Vector3(0, 0, 0),
+        rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(tableScale,tableScale,tableScale)
     },
     {
         position: new THREE.Vector3(1, 0, 1),
-        rotation: new THREE.Vector3(0, 0, 0),
+        rotation: new THREE.Vector3(0, Math.PI / 2, 0),
+        scale: new THREE.Vector3(tableScale,tableScale,tableScale)
+    },
+    {
+        position: new THREE.Vector3(0, 0, 2),
+        rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(tableScale,tableScale,tableScale)
     }
 ]
 
-const monitorScale = 0.4
+const monitorScale = 0.8
 const monitors = [
     {
-        position: new THREE.Vector3(0, 1.2, 0),
-        rotation: new THREE.Vector3(0, 0, 0),
+        position: new THREE.Vector3(0, 2.1, 0),
+        rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(monitorScale,monitorScale,monitorScale)
     },
     {
-        position: new THREE.Vector3(1, 1.2, 1),
-        rotation: new THREE.Vector3(0, 0, 0),
+        position: new THREE.Vector3(1, 2.1, 1),
+        rotation: new THREE.Vector3(0, Math.PI / 2, 0),
+        scale: new THREE.Vector3(monitorScale,monitorScale,monitorScale)
+    },
+    {
+        position: new THREE.Vector3(0, 2.1, 2),
+        rotation: new THREE.Vector3(0, Math.PI / 2, 0),
         scale: new THREE.Vector3(monitorScale,monitorScale,monitorScale)
     }
 ]
+
+const tvScale = 1
+const tvH =  {
+        position: new THREE.Vector3(6, 0, -12),
+        rotation: new THREE.Vector3(0, 90, 0),
+        scale: new THREE.Vector3(tvScale,tvScale,tvScale)
+    }
+const tvV =    {
+        position: new THREE.Vector3(8, 0, -8),
+        rotation: new THREE.Vector3(0, 90, 0 ),
+        scale: new THREE.Vector3(tvScale,tvScale,tvScale)
+    }
+
 
 
 
@@ -50,7 +73,7 @@ scene.background = gradientTexture;
 
 
 // Create floor
-const floorGeometry = new THREE.PlaneGeometry(20, 30);
+const floorGeometry = new THREE.PlaneGeometry(30, 30);
 const floorMaterial = new THREE.MeshStandardMaterial({ 
     color: 0x000000,  // Black
     roughness: 0.1,
@@ -74,9 +97,12 @@ directionalLight.shadow.camera.near = 1;
 directionalLight.shadow.camera.far = 20;
 scene.add(directionalLight);
 
-// Set up camera position
-camera.position.set(0, 5, 10);
+// Set up camera position for top view
+camera.position.set(0, 20, 0);
 camera.lookAt(0, 0, 0);
+
+// Rotate the view 90 degrees around the Z-axis
+camera.up.set(1, 0, 0);
 
 // Add orbit controls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -126,6 +152,8 @@ loader.load('monitor.glb', (gltf) => {
             child.material.color.set(0xD3D3D3); // light grey color
             child.material.emissive = new THREE.Color(0xD3D3D3); // light grey emissive color
             child.material.emissiveIntensity = 0.3; // set emissive intensity to make it glow
+            child.material.transparent = true; // make the material transparent
+            child.material.opacity = 0.5; // set the opacity to 50%
         }
     });
 
@@ -151,6 +179,8 @@ loader.load('desk.glb', (gltf) => {
         child.material.color.set(0xD3D3D3); // light grey color
         child.material.emissive = new THREE.Color(0xD3D3D3); // light grey emissive color
         child.material.emissiveIntensity = 0.3; // set emissive intensity to make it glow
+        child.material.transparent = true; // make the material transparent
+        child.material.opacity = 0.5; // set the opacity to 50%
         }
     });
 
@@ -163,6 +193,49 @@ loader.load('desk.glb', (gltf) => {
         scene.add(desk);
     });
 });
+
+//add tv
+loader.load('tv-h.glb', (gltf) => {
+    const tvModel = gltf.scene;
+    tvModel.castShadow = true;
+    tvModel.receiveShadow = true;
+    tvModel.position.copy(tvH.position);
+    tvModel.rotation.set(tvH.rotation.x, tvH.rotation.y, tvH.rotation.z);
+    tvModel.scale.copy(tvH.scale);
+
+
+    tvModel.traverse((child) => {
+        if (child.isMesh) {
+            child.material.color.set(0xD3D3D3); // light grey color
+            child.material.emissive = new THREE.Color(0xD3D3D3); // light grey emissive color
+            child.material.emissiveIntensity = 0.3; // set emissive intensity to make it glow
+            child.material.transparent = true; // make the material transparent
+            child.material.opacity = 0.8; // set the opacity to 50%
+            }
+        });
+    scene.add(tvModel);
+});
+
+loader.load('tv-v.glb', (gltf) => {
+    const tvModel = gltf.scene;
+    tvModel.castShadow = true;
+    tvModel.receiveShadow = true;
+    tvModel.position.copy(tvV.position);
+    tvModel.rotation.set(tvV.rotation.x, tvV.rotation.y, tvV.rotation.z);
+    tvModel.scale.copy(tvV.scale);
+
+
+    tvModel.traverse((child) => {
+        if (child.isMesh) {
+            child.material.color.set(0xD3D3D3); // light grey color
+            child.material.emissive = new THREE.Color(0xD3D3D3); // light grey emissive color
+            child.material.emissiveIntensity = 0.3; // set emissive intensity to make it glow
+            child.material.transparent = true; // make the material transparent
+            child.material.opacity = 0.8; // set the opacity to 50%
+            }
+        });
+    scene.add(tvModel);
+});   
 
 
 
@@ -189,18 +262,18 @@ loader.load('desk.glb', (gltf) => {
 
 // Define the walking path
 const pathPoints = [
-    new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(10, 0, 10),
+    new THREE.Vector3(-10, 0, 0),
     new THREE.Vector3(10, 0, 0),
-    new THREE.Vector3(5, 0, -5),
-    new THREE.Vector3(0, 0, 0)
+    new THREE.Vector3(10, 0, 10),
+    new THREE.Vector3(-10, 0, 10),
+    // new THREE.Vector3(0, 0, 0)
 ];
 let currentPointIndex = 0;
 const pathSpeed = 0.02;
 
 // Man setting object
 const manSettings = {
-    scale: new THREE.Vector3(0.8, 0.8, 0.8),
+    scale: new THREE.Vector3(1.5, 1.5, 1.5),
     position: new THREE.Vector3(0, 0, 0),
     castShadow: true,
     receiveShadow: true,
@@ -210,7 +283,7 @@ const manSettings = {
 };
 
 // Load and add a walking man model
-loader.load('man-walking.glb', (gltf) => {
+loader.load('alligator_walking_upright.glb', (gltf) => {
     const walkingMan = gltf.scene;
     walkingMan.scale.copy(manSettings.scale);
     walkingMan.position.copy(manSettings.position);
@@ -218,13 +291,13 @@ loader.load('man-walking.glb', (gltf) => {
     walkingMan.receiveShadow = manSettings.receiveShadow;
     
     // Set glow
-    walkingMan.traverse((child) => {
-        if (child.isMesh) {
-            child.material.emissive = manSettings.emissiveColor; // Set emissive color to light grey
-            child.material.emissiveIntensity = manSettings.emissiveIntensity; // Set emissive intensity to make it glow
-            child.material.needsUpdate = true; // Ensure material update
-        }
-    });
+    // walkingMan.traverse((child) => {
+    //     if (child.isMesh) {
+    //         child.material.emissive = manSettings.emissiveColor; // Set emissive color to light grey
+    //         child.material.emissiveIntensity = manSettings.emissiveIntensity; // Set emissive intensity to make it glow
+    //         child.material.needsUpdate = true; // Ensure material update
+    //     }
+    // });
     
     scene.add(walkingMan);
     // Add walking animation
@@ -331,9 +404,10 @@ infoBlock2.innerHTML = 'Crowd Count 3D Scene';
 document.body.appendChild(infoBlock2);
 
 
-// Create an additional box
-const additionalBoxGeometry = new THREE.BoxGeometry(1, 1, 1);
-const additionalBoxMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+// backgrop
+const additionalBoxGeometry = new THREE.BoxGeometry(15, 7, 0.2);
+const additionalBoxMaterial = new THREE.MeshBasicMaterial({ color: 0x808080, transparent: true, opacity: 0.5 });
 const additionalBox = new THREE.Mesh(additionalBoxGeometry, additionalBoxMaterial);
-additionalBox.position.set(5, 0.5, 5);
+additionalBox.position.set(9, 3, 0);
+additionalBox.rotation.y = Math.PI / 2; // Rotate 90 degrees around the z-axis
 scene.add(additionalBox);
