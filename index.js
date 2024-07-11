@@ -618,19 +618,19 @@ function animate() {
         // Update the mixer
       }
     }
-  } else {
-    for (const id in personModels) {
-      personModels[id].mixer.update(delta);
-    }
-    return;
-  }
-  // Remove models that are no longer in the data
+    // Remove models that are no longer in the data
   for (const id in personModels) {
     if (!redisData[id]) {
       scene.remove(personModels[id].model);
       delete personModels[id];
     }
   }
+  } else {
+    for (const id in personModels) {
+      personModels[id].mixer.update(delta);
+    }
+  }
+  
   controls.update();
   renderer.render(scene, camera);
 }
